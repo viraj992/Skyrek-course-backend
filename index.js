@@ -15,7 +15,7 @@ app.use(
     (req,res,next)=>{
         const value = req.header("Authorization")
         if(value != null){ // null nove nm
-            const token = value.replace("Bearer", "")
+            const token = value.replace("Bearer ","")
             jwt.verify(
                 token,
                 "cbc-6503",
