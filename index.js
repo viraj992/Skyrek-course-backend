@@ -5,6 +5,7 @@ import Student from "./models/student.js"  // auto suggestion import nm, .js aga
 import studentRouter from "./routers/studentRouter.js"
 import userRouter from "./routers/userRouter.js"
 import jwt from "jsonwebtoken"
+import productRouter from "./routers/productRouter.js"
 
 
 const app = express()
@@ -55,6 +56,7 @@ mongoose.connect(connectionString).then(
 // github repositary created
 app.use("/students",studentRouter)
 app.use("/users", userRouter)
+app.use("/products",productRouter)
 
 
 app.listen(5000,
