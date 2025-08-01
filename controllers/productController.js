@@ -61,3 +61,29 @@ export async function deleteProduct(req,res){
         return;
     }
 }
+
+export async function updateProduct(req,res){
+    if(!isAdmin(req)){
+        res.status(403).json({ message: "Access denied. Admins only"});
+        return;  
+    }
+
+    const data = req.body;
+    const productId = req.params.productId;
+    data.productId = productId;
+
+    try{
+        await Product.updateOne(
+            {
+                productId : productId
+            },
+            data
+        );
+        res.json({ message: "Product updated successfully"});
+    }catch{
+        console.error("Error updating Product:", error);
+        res.status(403).json({ message: "Failed to update product"});
+        return;
+    }
+
+}
