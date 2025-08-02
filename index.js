@@ -55,8 +55,8 @@ mongoose.connect(connectionString).then(
 // suggestions = ctrl + space button
 // github repositary created
 app.use("/students",studentRouter)
-app.use("/users", userRouter)
-app.use("/products",productRouter)
+app.use("/api/users", userRouter)
+app.use("/api//products",productRouter)
 
 
 app.listen(5000,
