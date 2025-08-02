@@ -70,7 +70,7 @@ export async function updateProduct(req,res){
 
     const data = req.body;
     const productId = req.params.productId;
-    data.productId = productId;
+    data.productId = productId;  // preventing changing productId
 
     try{
         await Product.updateOne(
@@ -86,4 +86,34 @@ export async function updateProduct(req,res){
         return;
     }
 
+}
+
+export async function getProductInfo(req, res) {
+	try {
+        const productId = req.params.productId;
+        const product = await Product.findOne({ productId: productId });
+
+        if(product == null){
+            res.status(404).json({ message: "Product not found" });
+            return;
+        }
+
+		if (isAdmin(req)) {
+
+            res.json(product);
+
+		} else {
+            if(product.isAvailable){
+
+                res.json(product);
+
+            }else{
+                res.status(404).json({ message: "Product is not available" });
+            }
+		}
+	} catch (error) {
+		console.error("Error fetching product info:", error);
+		res.status(500).json({ message: "Failed to fetch product info" });
+        return
+	}
 }
