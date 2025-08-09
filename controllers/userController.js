@@ -22,6 +22,7 @@ export function createUser(req,res){
         ()=>{
             res.json({
                 message : "User created Successfully"
+
             })
         }
     ).catch(
@@ -66,7 +67,8 @@ export function loginUser(req,res){
 
                     res.json({
                         token : token,
-                        message : "Login Successful"
+                        message : "Login Successful",
+                        role : user.role
                     })
                 }else{
                     res.status(403).json({
