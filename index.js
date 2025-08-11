@@ -1,7 +1,7 @@
 import express from "express"
 import mongoose from "mongoose"
 import bodyParser from "body-parser"
-import Student from "./models/student.js"  // auto suggestion import nm, .js agata dagnna
+
 import studentRouter from "./routers/studentRouter.js"
 import userRouter from "./routers/userRouter.js"
 import jwt from "jsonwebtoken"
@@ -62,7 +62,7 @@ mongoose.connect(connectionString).then(
 // github repositary created
 app.use("/students",studentRouter)
 app.use("/api/users", userRouter)
-app.use("/api//products",productRouter)
+app.use("/api/products",productRouter)
 
 
 app.listen(5000,
