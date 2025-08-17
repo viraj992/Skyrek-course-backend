@@ -40,7 +40,13 @@ const productSchema = new mongoose.Schema({
         required : true,
         default : "cosmatics",
 
+    },
+    category : {
+        type : String,
+        required : true,
+        default : "cosmatics"
     }
+
 })
 
 const Product = mongoose.model("products", productSchema)
