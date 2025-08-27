@@ -1,4 +1,5 @@
 import Order from "../models/order.js";
+import Product from "../models/product.js";
 
 export async function createOrder(req,res){
     try{
@@ -21,12 +22,30 @@ export async function createOrder(req,res){
             const newOrderIdWithoutPrefix = newOrderIdInInteger.toString().padStart(5, '0'); //00636
             orderId = "CBC"+newOrderIdWithoutPrefix; //"CBC00636"
         }
-        
+
         const items = [];
+        let total = 0;
+
         if(req.body.items !== null && Array.isArray(req.body.items)){
             for(let i = 0; i < req.body.items.length; i++){
 
                 let item = req.body.items[i];
+                let product = await Product.findOne({
+                    productId: item.productId,
+                });
+
+                if(product == null){
+                    res.status(400).json({ message: "Invalid product ID: " + item.productId });
+                    return;
+                }
+                items[i] = {
+                    productId: product.productId,
+					name: product.name,
+					image: product.images[0],
+					price: product.price,
+					qty: item.qty,
+                }
+                total += product.price * item.qty;
             }
         }
 
@@ -36,7 +55,8 @@ export async function createOrder(req,res){
             name : req.user.firstName + " " + req.user.lastName,
             address : req.body.address,
             phone : req.body.phone,
-            items : req.body.items,
+            items : items,
+            total : total,
         })
 
         const result = await order.save();
@@ -45,6 +65,7 @@ export async function createOrder(req,res){
             message : "Order created Successfully",
             result: result
         });
+
     } catch(error){
         console.error("Error fetching orders:", error);
         res.status(500).json({ message: "Failed to fetch orders" });
