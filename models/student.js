@@ -10,4 +10,4 @@ const studentSchema = new mongoose.Schema(
 
 const Student = mongoose.model("students",studentSchema) // name and schema
 
-export default Student;
+export default Student;  
