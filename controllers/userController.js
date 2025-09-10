@@ -80,6 +80,16 @@ export function loginUser(req,res){
     )
 }
 
+export function getUser(req,res){
+    if(req.user == null){
+        res.status(404).json({
+            message : "user not found"
+        })
+    }else{
+        res.json(req.user)
+    }
+}
+
 //checking as a admin or not
 export function isAdmin(req){
 
