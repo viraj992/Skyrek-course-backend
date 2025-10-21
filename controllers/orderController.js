@@ -14,7 +14,7 @@ export async function createOrder(req,res){
         let orderId = "CBC00202"
 
         if(latestOrder.length > 0){
-            //if old orders exist  - Like "CBC0035"
+            //if old orders exist  - Like "CBC00635"
             const lastOrderIdInString = latestOrder[0].orderID; //"CBC00635"
             const lastOrderIdWithoutprefix = lastOrderIdInString.replace("CBC","");//"00635"
             const lastOrderIdInteger = parseInt(lastOrderIdWithoutprefix) //635
@@ -105,4 +105,41 @@ export async function getOrders(req,res){
         console.error("Error fetching orders:", error);
         res.status(500).json({ message: "Failed to fetch orders" });
     }
+}
+
+
+//update order
+export function updateOrder(req,res){
+    //if(req.user.role == "admin")
+	if(req.user.role == "admin"){
+		const orderId = req.params.orderId;
+		const status = req.body.status;
+		const notes = req.body.notes;
+
+		Order.findOneAndUpdate(
+			{ orderID: orderId },
+			{ status: status , notes: notes },
+			{ new: true }
+		).then(
+			(updatedOrder) => {
+				if (updatedOrder) {
+					res.json({
+						message: "Order updated successfully",
+						order: updatedOrder,
+					});
+				} else {
+					res.status(404).json({ message: "Order not found" });
+				}
+			}
+		).catch(
+			(error) => {
+				console.error("Error updating order:", error);
+				res.status(500).json({ message: "Failed to update order" });
+			}
+		);
+	}else{
+		res.status(403).json({
+			message : "You are not authorized to update orders"
+		})
+	}
 }
