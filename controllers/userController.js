@@ -23,7 +23,6 @@ export function createUser(req,res){
         ()=>{
             res.json({
                 message : "User created Successfully"
-
             })
         }
     ).catch(
