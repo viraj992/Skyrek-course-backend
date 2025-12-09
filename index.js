@@ -11,6 +11,7 @@ import cors from "cors"
 import orderRouter from "./routers/orderRouter.js"
 
 
+
 dotenv.config()
 
 const app = express()
@@ -65,6 +66,8 @@ app.use("/students",studentRouter)
 app.use("/api/users", userRouter)
 app.use("/api/products",productRouter)
 app.use("/api/orders",orderRouter)
+
+
 
 
 app.listen(5000,
