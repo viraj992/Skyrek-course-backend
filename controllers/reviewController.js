@@ -71,3 +71,58 @@ export async function deleteReview(req,res){
         res.status(500).json({ message: "Failed to delete review" });
     }
 }
+
+export async function updateReview(req, res) {
+    if (!req.user) {
+        return res.status(401).json({ message: "Please login to update review" });
+    }
+
+    const reviewId = req.params.id;
+    const { rating, comment, isApproved } = req.body; // Added isApproved
+
+    if (!rating || !comment) {
+        return res.status(400).json({ message: "Rating and comment are required" });
+    }
+
+    try {
+        // Step 1: Find existing review
+        const review = await Review.findById(reviewId);
+
+        if (!review) {
+            return res.status(404).json({ message: "Review not found" });
+        }
+
+        // Step 2: Check admin OR owner
+        const reviewerFullName = `${req.user.firstName} ${req.user.lastName}`;
+        const isAdmin = req.user.role === "admin";
+
+        if (!isAdmin && review.reviewerName !== reviewerFullName) {
+            return res.status(403).json({
+                message: "You can update only your own review"
+            });
+        }
+
+        // Step 3: Update fields
+        review.rating = rating;
+        review.comment = comment;
+
+        if (isAdmin) {
+            // Admin can update approval status
+            if (typeof isApproved === "boolean") {
+                review.isApproved = isApproved;
+            }
+        } else {
+            // Normal user updating → review requires reapproval
+            review.isApproved = false;
+        }
+
+        await review.save();
+
+        res.json({ message: "Review updated successfully" });
+
+    } catch (error) {
+        console.error("Error updating review:", error);
+        res.status(500).json({ message: "Failed to update review" });
+    }
+}
+
