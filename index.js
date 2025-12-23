@@ -9,6 +9,7 @@ import productRouter from "./routers/productRouter.js"
 import dotenv from "dotenv"
 import cors from "cors"
 import orderRouter from "./routers/orderRouter.js"
+import reviewRouter from "./routers/reviewRouter.js"
 
 
 
@@ -66,6 +67,7 @@ app.use("/students",studentRouter)
 app.use("/api/users", userRouter)
 app.use("/api/products",productRouter)
 app.use("/api/orders",orderRouter)
+app.use("/api/reviews",reviewRouter)
 
 
 
