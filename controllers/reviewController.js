@@ -74,47 +74,46 @@ export async function deleteReview(req,res){
 
 export async function updateReview(req, res) {
     if (!req.user) {
-        return res.status(401).json({ message: "Please login to update review" });
+        return res.status(401).json({ message: "Please login" });
     }
 
     const reviewId = req.params.id;
-    const { rating, comment, isApproved } = req.body; // Added isApproved
-
-    if (!rating || !comment) {
-        return res.status(400).json({ message: "Rating and comment are required" });
-    }
+    const { rating, comment, isApproved } = req.body;
 
     try {
-        // Step 1: Find existing review
         const review = await Review.findById(reviewId);
 
         if (!review) {
             return res.status(404).json({ message: "Review not found" });
         }
 
-        // Step 2: Check admin OR owner
+        const isAdminUser = req.user.role === "admin";
         const reviewerFullName = `${req.user.firstName} ${req.user.lastName}`;
-        const isAdmin = req.user.role === "admin";
 
-        if (!isAdmin && review.reviewerName !== reviewerFullName) {
+        //  Permission check
+        if (!isAdminUser && review.reviewerName !== reviewerFullName) {
             return res.status(403).json({
-                message: "You can update only your own review"
+                message: "You can update only your own review",
             });
         }
 
-        // Step 3: Update fields
+        //  Admin approval-only update
+        if (isAdminUser && typeof isApproved === "boolean") {
+            review.isApproved = isApproved;
+            await review.save();
+            return res.json({ message: "Review approval updated" });
+        }
+
+        //  Normal user update
+        if (!rating || !comment) {
+            return res.status(400).json({
+                message: "Rating and comment are required",
+            });
+        }
+
         review.rating = rating;
         review.comment = comment;
-
-        if (isAdmin) {
-            // Admin can update approval status
-            if (typeof isApproved === "boolean") {
-                review.isApproved = isApproved;
-            }
-        } else {
-            // Normal user updating → review requires reapproval
-            review.isApproved = false;
-        }
+        review.isApproved = false; // needs re-approval
 
         await review.save();
 
@@ -125,4 +124,5 @@ export async function updateReview(req, res) {
         res.status(500).json({ message: "Failed to update review" });
     }
 }
+
 
